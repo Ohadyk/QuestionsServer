@@ -7,7 +7,14 @@ questionsService = QuestionsService()
 
 @QuestionsRouter.route('/', methods=['POST'])
 def ask():
-    data = request.get_json()
+
+    if not request.is_json:
+        return jsonify({"error": "Invalid input, JSON required"}), 400
+
+    try:
+        data = request.get_json()
+    except Exception:
+        return jsonify({"error": "Invalid JSON data"}), 400
 
     response, status_code = questionsService.create_question(data)
 
