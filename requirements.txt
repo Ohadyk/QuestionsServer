@@ -3,3 +3,4 @@ SQLAlchemy
 alembic
 openai
 python-dotenv
+pytest

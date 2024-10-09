@@ -4,7 +4,7 @@ from src.models.question import Question
 from src.repositories.questionsRepository import QuestionsRepository
 
 question_min_len = 1
-question_max_len = 65535
+question_max_len = 15000
 
 
 class QuestionsService:
@@ -14,7 +14,7 @@ class QuestionsService:
         self.questionsRepository = QuestionsRepository(db)
 
     # Validate the body data of request
-    def validate_data(self, data):
+    def _validate_data(self, data):
         if "question" not in data.keys():
             raise Exception("Invalid request body, question is required")
 
@@ -30,15 +30,15 @@ class QuestionsService:
 
     def create_question(self, data):
         try:
-            question = self.validate_data(data)
+            question = self._validate_data(data)
         except Exception as e:
-            return {"message": str(e)}, 400
+            return {"error": str(e)}, 400
 
         try:
             openAI_API = OpenAI_API()
             answer = openAI_API.ask_openai_api(question)
         except Exception:
-            return {"message": "An error has occurred, try again later"}, 500
+            return {"error": "An error has occurred, try again later"}, 500
 
         # Create Question object
         newQuestion = Question(
@@ -50,6 +50,6 @@ class QuestionsService:
             # Store the question in the database
             self.questionsRepository.add(newQuestion)
         except Exception:
-            return {"message": "An error has occurred, try again later"}, 500
+            return {"error": "An error has occurred, try again later"}, 500
 
         return {"answer": newQuestion.answer}, 201
