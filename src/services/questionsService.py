@@ -1,11 +1,10 @@
-import os
-from openai import OpenAI
+from src.openAI_API import OpenAI_API
 from src.dbConnection import get_db
 from src.models.question import Question
 from src.repositories.questionsRepository import QuestionsRepository
 
 question_min_len = 1
-question_max_len = 1000
+question_max_len = 65535
 
 
 class QuestionsService:
@@ -29,26 +28,6 @@ class QuestionsService:
 
         return question
 
-    # Send question to OpenAI API to get the answer
-    def ask_openai_api(self, question):
-        client = OpenAI(
-            api_key=os.getenv('OPENAI_API_KEY'),
-            organization=os.getenv('OPENAI_ORGANIZATION'),
-            project=os.getenv('OPENAI_PROJECT'),
-        )
-
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": question}
-            ],
-        )
-
-        # Extract the answer from the API response
-        answer = response.choices[0].message.content.strip()
-
-        return answer
-
     def create_question(self, data):
         try:
             question = self.validate_data(data)
@@ -56,7 +35,8 @@ class QuestionsService:
             return {"message": str(e)}, 400
 
         try:
-            answer = self.ask_openai_api(question)
+            openAI_API = OpenAI_API()
+            answer = openAI_API.ask_openai_api(question)
         except Exception:
             return {"message": "An error has occurred, try again later"}, 500
 
