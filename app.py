@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from src.dbConnection import SessionLocal
 from src.routes.questionsRouter import QuestionsRouter
