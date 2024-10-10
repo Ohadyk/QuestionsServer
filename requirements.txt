@@ -4,3 +4,4 @@ alembic
 openai
 python-dotenv
 pytest
+psycopg2-binary
