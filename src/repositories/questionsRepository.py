@@ -1,5 +1,3 @@
-# from src.dbConnection import SessionLocal
-
 
 class QuestionsRepository:
 
